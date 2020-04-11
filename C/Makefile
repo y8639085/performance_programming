@@ -14,4 +14,4 @@ MD: $(OBJ)
 all:MD
 
 clean:
-	rm -f MD $(OBJ)ls
+	rm -f MD $(OBJ)ls control.o
