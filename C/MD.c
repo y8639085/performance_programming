@@ -19,25 +19,21 @@ double Size;
     printf("timestep %d\n",step);
     printf("collisions %d\n",collisions);
 
-
-    /* set the viscosity term, add the wind term in the force calculation */
+    /* set the viscosity and the wind term in the force calculation */
     for(j=0;j<Ndim;j++) {
       wind_visc_force(Nbody,f[j],vis,velo[j],wind[j]);
     }
 
     /* calculate distance from central mass */
-    for(k=0;k<Nbody;k++){
-      r[k] = 0.0;
-    }
-    for(i=0;i<Ndim;i++){
-	    add_norm(Nbody,r,pos[i]);
-    }
-    for(k=0;k<Nbody;k++){
+    memset(r, 0.0, Nbody*sizeof(double));
+    for(k=0;k<Nbody;k++){ 
+      for(i=0;i<Ndim;i++){
+        r[k] += (pos[i][k]* pos[i][k]);// inline and vectorisation
+      }
       r[k] = sqrt(r[k]);
     }
-    // for(i=0;i<Nbody;i++){
-	  //   r[i] = add_norm(Ndim,pos[i]);
-    // }
+
+
 
 
 
@@ -59,19 +55,13 @@ double Size;
     }
 
     /* calculate norm of separation vector */
+    memset (delta_r, 0.0, Npair * sizeof (double));
     for(k=0;k<Npair;k++){
-      delta_r[k] = 0.0;
-    }
-    for(i=0;i<Ndim;i++){
-      add_norm(Npair,delta_r,delta_pos[i]);
-    }
-    for(k=0;k<Npair;k++){
+      for (i = 0; i < Ndim; i++) {
+        delta_r[k] += (delta_pos[i][k] * delta_pos[i][k]);
+      }
       delta_r[k] = sqrt(delta_r[k]);
     }
-    // for(i=0;i<Npair;i++){
-    //   add_norm(Ndim,delta_pos[i]);
-    // }
-
 
 
 
