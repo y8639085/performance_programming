@@ -18,16 +18,6 @@ inline void add_norm(int N,double *r, double *delta)
   }
 }
 
-// inline double add_norm(int N, double *delta)
-// {
-//   int k;
-//   double r = 0.0;
-//   for(k=0;k<N;k++){
-//     r += (delta[k] * delta[k]);
-//   }
-//   return sqrt(r);
-// }
-
 inline double force(double W, double delta, double r){
   return W*delta/(pow(r,3.0));
 }

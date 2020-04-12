@@ -36,7 +36,6 @@ double Size;
 
 
 
-
     /* calculate central force */
     for(i=0;i<Nbody;i++){
       for(l=0;l<Ndim;l++){

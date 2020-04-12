@@ -23,16 +23,17 @@
 #define  Npair ((Nbody*(Nbody-1))/2)
 
 enum{ Xcoord=0, Ycoord, Zcoord, Ndim };
-      
-DEF double *pos[Ndim], *velo[Ndim];
-DEF double *f[Ndim], *vis, *mass, *radius;
-DEF double *delta_pos[3];
-DEF double *r;
-DEF double *delta_r;
+
 DEF double wind[Ndim];
+DEF double pos[Ndim][Nbody], velo[Ndim][Nbody];
+DEF double f[Ndim][Nbody];
+DEF double delta_pos[3][Nbody*Nbody];
+DEF double delta_r[Nbody*Nbody];
+DEF double r[Nbody], vis[Nbody], mass[Nbody], radius[Nbody];
 DEF int collisions;
 
 #define G 2.0
 #define M_central 1000.0
+#define PADDING 64
 
 void evolve(int Nstep, double dt);
