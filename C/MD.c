@@ -39,7 +39,7 @@ double Size;
     /* calculate central force */
     for(i=0;i<Nbody;i++){
       for(l=0;l<Ndim;l++){
-        f[l][i] -= force(G*mass[i]*M_central,pos[l][i],r[i]);
+        f[l][i] -= force(GxM_central*mass[i],pos[l][i],r[i]);
       }
     }
     /* calculate pairwise separation of particles */
@@ -70,20 +70,25 @@ double Size;
     * add pairwise forces.
     */
     k = 0;
+    double G_ij;
     for(i=0;i<Nbody;i++){
       for(j=i+1;j<Nbody;j++){
         Size = radius[i] + radius[j];
         collided=0;
-        for(l=0;l<Ndim;l++){
-          /*  flip force if close in */
-          if( delta_r[k] >= Size ){
-            f[l][i] -= force(G*mass[i]*mass[j],delta_pos[l][k],delta_r[k]);
-            f[l][j] += force(G*mass[i]*mass[j],delta_pos[l][k],delta_r[k]);
-          } else{
-            f[l][i] += force(G*mass[i]*mass[j],delta_pos[l][k],delta_r[k]);
-            f[l][j] -= force(G*mass[i]*mass[j],delta_pos[l][k],delta_r[k]);
-            collided=1;
+        /*  flip force if close in */
+        G_ij = G*mass[i]*mass[j];
+        if( delta_r[k] >= Size ){
+          for(l=0;l<Ndim;l++){
+            f[l][i] -= force(G_ij,delta_pos[l][k],delta_r[k]);
+            f[l][j] += force(G_ij,delta_pos[l][k],delta_r[k]);
           }
+        }
+        else{
+          for(l=0;l<Ndim;l++){
+            f[l][i] += force(G_ij,delta_pos[l][k],delta_r[k]);
+            f[l][j] -= force(G_ij,delta_pos[l][k],delta_r[k]);
+          }
+          collided=1;
         }
         if( collided == 1 ){
           collisions++;

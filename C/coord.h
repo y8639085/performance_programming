@@ -34,6 +34,7 @@ DEF int collisions;
 
 #define G 2.0
 #define M_central 1000.0
+#define GxM_central 2000.0
 #define PADDING 64
 
 void evolve(int Nstep, double dt);
