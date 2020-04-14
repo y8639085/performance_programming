@@ -12,7 +12,7 @@ int  step;
 int i,j,k,l;
 int collided;
 double Size;
-double r;
+double r, delta_r;
   /*
   * Loop over timesteps.
   */
@@ -52,16 +52,6 @@ double r;
       }
     }
 
-    /* calculate norm of separation vector */
-    memset (delta_r, 0.0, Npair * sizeof (double));
-    #pragma simd
-    for(k=0;k<Npair;k++){
-      for (i = 0; i < Ndim; i++) {
-        delta_r[k] += (delta_pos[k][i] * delta_pos[k][i]);
-      }
-      delta_r[k] = sqrt(delta_r[k]);
-    }
-
     /*
     * add pairwise forces.
     */
@@ -70,22 +60,24 @@ double r;
     double force_result;
     for(i=0;i<Nbody;i++){
       for(j=i+1;j<Nbody;j++){
+        /* calculate norm of separation vector */
+        delta_r = add_norm(Ndim, delta_pos[k]);
         Size = radius[i] + radius[j];
         collided=0;
         /*  flip force if close in */
         G_ij = G*mass[i]*mass[j];
-        if( delta_r[k] >= Size ){
+        if( delta_r >= Size ){
           #pragma simd
           for(l=0;l<Ndim;l++){
-            f[i][l] -= force(G_ij,delta_pos[k][l],delta_r[k]);
-            f[j][l] += force(G_ij,delta_pos[k][l],delta_r[k]);
+            f[i][l] -= force(G_ij,delta_pos[k][l],delta_r);
+            f[j][l] += force(G_ij,delta_pos[k][l],delta_r);
           }
         }
         else{
           #pragma simd
           for(l=0;l<Ndim;l++){
-            f[i][l] += force(G_ij,delta_pos[k][l],delta_r[k]);
-            f[j][l] -= force(G_ij,delta_pos[k][l],delta_r[k]);
+            f[i][l] += force(G_ij,delta_pos[k][l],delta_r);
+            f[j][l] -= force(G_ij,delta_pos[k][l],delta_r);
           }
           collided=1;
         }

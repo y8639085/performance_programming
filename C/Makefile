@@ -1,7 +1,7 @@
 SRC=MD.c control.c
 OBJ=$(SRC:.c=.o)
 CC=icc 
-CFLAGS= -g -O3 -restrict -ipo
+CFLAGS= -g -Ofast -restrict -ipo
 REPORTFLAGS= -qopt-report-file=compilerreport.txt -qopt-report=5
 
 %.o: %.c
