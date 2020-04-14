@@ -12,6 +12,7 @@ int  step;
 int i,j,k,l;
 int collided;
 double Size;
+double r;
   /*
   * Loop over timesteps.
   */
@@ -21,23 +22,23 @@ double Size;
 
     /* set the viscosity and the wind term in the force calculation */
     #pragma simd
-    for(j=0;j<Ndim;j++) {
-      wind_visc_force(Nbody,f[j],vis,velo[j],wind[j]);
-    }
+    for(j=0;j<Nbody;j++) {
+      wind_visc_force(Ndim,f[j],vis[j],velo[j],wind);
 
     /* calculate distance from central mass */
-    memset(r, 0.0, Nbody*sizeof(double));
-    #pragma simd
-    for(k=0;k<Nbody;k++){
-      for(i=0;i<Ndim;i++){
-        r[k] += (pos[i][k]* pos[i][k]);// inline and vectorisation
-      }
-      r[k] = sqrt(r[k]);
+      r = add_norm(Ndim, pos[j]);
       /* calculate central force */
       for(l=0;l<Ndim;l++){
-        f[l][k] -= force(GxM_central*mass[k],pos[l][k],r[k]);
+        f[j][l] -= force(GxM_central*mass[j],pos[j][l],r);
       }
     }
+
+
+
+
+
+
+
 
     /* calculate pairwise separation of particles */
     k = 0;
@@ -45,7 +46,7 @@ double Size;
       #pragma simd
       for(j=i+1;j<Nbody;j++){
         for(l=0;l<Ndim;l++){
-          delta_pos[l][k] = pos[l][i] - pos[l][j];
+          delta_pos[k][l] = pos[i][l] - pos[j][l];
         }
         k = k + 1;
       }
@@ -56,7 +57,7 @@ double Size;
     #pragma simd
     for(k=0;k<Npair;k++){
       for (i = 0; i < Ndim; i++) {
-        delta_r[k] += (delta_pos[i][k] * delta_pos[i][k]);
+        delta_r[k] += (delta_pos[k][i] * delta_pos[k][i]);
       }
       delta_r[k] = sqrt(delta_r[k]);
     }
@@ -76,15 +77,15 @@ double Size;
         if( delta_r[k] >= Size ){
           #pragma simd
           for(l=0;l<Ndim;l++){
-            f[l][i] -= force(G_ij,delta_pos[l][k],delta_r[k]);
-            f[l][j] += force(G_ij,delta_pos[l][k],delta_r[k]);
+            f[i][l] -= force(G_ij,delta_pos[k][l],delta_r[k]);
+            f[j][l] += force(G_ij,delta_pos[k][l],delta_r[k]);
           }
         }
         else{
           #pragma simd
           for(l=0;l<Ndim;l++){
-            f[l][i] += force(G_ij,delta_pos[l][k],delta_r[k]);
-            f[l][j] -= force(G_ij,delta_pos[l][k],delta_r[k]);
+            f[i][l] += force(G_ij,delta_pos[k][l],delta_r[k]);
+            f[j][l] -= force(G_ij,delta_pos[k][l],delta_r[k]);
           }
           collided=1;
         }
@@ -99,8 +100,8 @@ double Size;
     #pragma simd
     for(i=0;i<Nbody;i++){
       for(j=0;j<Ndim;j++){
-        pos[j][i] += dt * velo[j][i];
-        velo[j][i] += dt * (f[j][i]/mass[i]);
+        pos[i][j] += dt * velo[i][j];
+        velo[i][j] += dt * (f[i][j]/mass[i]);
       }
     }
   }
