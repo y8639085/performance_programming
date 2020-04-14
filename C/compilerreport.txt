@@ -32,7 +32,7 @@ Begin optimization report for: main
 
     Report from: Interprocedural optimizations [ipo]
 
-INLINE REPORT: (main) [1/7=14.3%] control.c(14,33)
+INLINE REPORT: (main) [1/6=16.7%] control.c(14,33)
   -> INLINE (MANUAL): (28,11) atoi.2 (isz = 4) (sz = 11)
     -> EXTERN: /usr/include/stdlib.h:(280,16) strtol
   -> EXTERN: (37,8) fopen
@@ -113,23 +113,23 @@ Begin optimization report for: evolve
 
     Report from: Interprocedural optimizations [ipo]
 
-INLINE REPORT: (evolve) [2/7=28.6%] MD.c(10,33)
+INLINE REPORT: (evolve) [2/6=33.3%] MD.c(10,33)
   -> EXTERN: (19,5) printf
   -> EXTERN: (20,5) printf
   -> (25,7) wind_visc_force (isz = 24) (sz = 37)
      [[ Call is inside loop with SIMD pragma and callee has SIMD pragma  <2>]]
   -> EXTERN: (29,5) memset
   -> INLINE (MANUAL): (38,20) force (isz = 2) (sz = 13)
-    -> EXTERN: MD.h:(23,19) pow
+    -> EXTERN: MD.h:(15,19) pow
   -> EXTERN: (55,5) memset
   -> INLINE (MANUAL): (79,24) force (isz = 2) (sz = 13)
-    -> EXTERN: MD.h:(23,19) pow
+    -> EXTERN: MD.h:(15,19) pow
   -> INLINE (MANUAL): (80,24) force (isz = 2) (sz = 13)
-    -> EXTERN: MD.h:(23,19) pow
+    -> EXTERN: MD.h:(15,19) pow
   -> INLINE (MANUAL): (86,24) force (isz = 2) (sz = 13)
-    -> EXTERN: MD.h:(23,19) pow
+    -> EXTERN: MD.h:(15,19) pow
   -> INLINE (MANUAL): (87,24) force (isz = 2) (sz = 13)
-    -> EXTERN: MD.h:(23,19) pow
+    -> EXTERN: MD.h:(15,19) pow
 
 
     Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
@@ -454,7 +454,7 @@ Begin optimization report for: wind_visc_force
 
     Report from: Interprocedural optimizations [ipo]
 
-INLINE REPORT: (wind_visc_force) [3/7=42.9%] MD.h(6,117)
+INLINE REPORT: (wind_visc_force) [3/6=50.0%] MD.h(6,117)
 
 
     Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
@@ -537,19 +537,11 @@ MD.h(6,117):remark #34051: REGISTER ALLOCATION : [wind_visc_force] MD.h:6
 
 ===========================================================================
 
-Begin optimization report for: add_norm
-
-    Report from: Interprocedural optimizations [ipo]
-
-DEAD STATIC FUNCTION: (add_norm) MD.h(15,1)
-
-===========================================================================
-
 Begin optimization report for: force
 
     Report from: Interprocedural optimizations [ipo]
 
-DEAD STATIC FUNCTION: (force) MD.h(22,54)
+DEAD STATIC FUNCTION: (force) MD.h(14,54)
 
 ===========================================================================
 
