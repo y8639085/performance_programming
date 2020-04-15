@@ -39,19 +39,6 @@ double r, delta_r;
 
 
 
-
-    /* calculate pairwise separation of particles */
-    k = 0;
-    for(i=0;i<Nbody;i++){
-      #pragma simd
-      for(j=i+1;j<Nbody;j++){
-        for(l=0;l<Ndim;l++){
-          delta_pos[k][l] = pos[i][l] - pos[j][l];
-        }
-        k = k + 1;
-      }
-    }
-
     /*
     * add pairwise forces.
     */
@@ -60,6 +47,10 @@ double r, delta_r;
     double force_result;
     for(i=0;i<Nbody;i++){
       for(j=i+1;j<Nbody;j++){
+        /* calculate pairwise separation of particles */
+        for(l=0;l<Ndim;l++){
+          delta_pos[k][l] = pos[i][l] - pos[j][l];
+        }
         /* calculate norm of separation vector */
         delta_r = add_norm(Ndim, delta_pos[k]);
         Size = radius[i] + radius[j];
