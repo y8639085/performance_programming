@@ -8,11 +8,12 @@
 #include "MD.h"
 
 void evolve(int count,double dt){
-int  step;
+int step;
 int i,j,k,l;
-int collided;
 double Size;
 double r, delta_r;
+double force_val;
+double f2[Ndim + PADDING];
   /*
   * Loop over timesteps.
   */
@@ -44,43 +45,43 @@ double r, delta_r;
     */
     k = 0;
     double G_ij;
-    double force_result;
     for(i=0;i<Nbody;i++){
+      memset(f2, 0, Ndim*sizeof(double));
       for(j=i+1;j<Nbody;j++){
         /* calculate pairwise separation of particles */
         for(l=0;l<Ndim;l++){
-          delta_pos[k][l] = pos[i][l] - pos[j][l];
+          delta_pos[l] = pos[i][l] - pos[j][l];
         }
         /* calculate norm of separation vector */
-        delta_r = add_norm(Ndim, delta_pos[k]);
+        delta_r = add_norm(Ndim, delta_pos);
         Size = radius[i] + radius[j];
-        collided=0;
         /*  flip force if close in */
         G_ij = G*mass[i]*mass[j];
         if( delta_r >= Size ){
-          #pragma simd
+          #pragma ivdep
           for(l=0;l<Ndim;l++){
-            f[i][l] -= force(G_ij,delta_pos[k][l],delta_r);
-            f[j][l] += force(G_ij,delta_pos[k][l],delta_r);
+            force_val = force(G_ij,delta_pos[l],delta_r);
+            f2[l] -= force_val;
+            f[j][l] += force_val;
           }
         }
         else{
-          #pragma simd
+          #pragma ivdep
           for(l=0;l<Ndim;l++){
-            f[i][l] += force(G_ij,delta_pos[k][l],delta_r);
-            f[j][l] -= force(G_ij,delta_pos[k][l],delta_r);
+            force_val = force(G_ij,delta_pos[l],delta_r);
+            f2[l] += force_val;
+            f[j][l] -= force_val;
           }
-          collided=1;
-        }
-        if( collided == 1 ){
           collisions++;
         }
         k = k + 1;
       }
+      for(l=0; l<Ndim; l++)
+        f[i][l] += f2[l];
     }
 
     /* update positions and velocities */
-    #pragma simd
+    #pragma ivdep
     for(i=0;i<Nbody;i++){
       for(j=0;j<Ndim;j++){
         pos[i][j] += dt * velo[i][j];
