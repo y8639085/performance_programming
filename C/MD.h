@@ -5,7 +5,6 @@
 
 inline void wind_visc_force(int N, double * restrict f, double vis, double * restrict velo, double * restrict wind) {
   int i;
-  // #pragma ivdep
   for (i=0;i<N;i++) {
     f[i] = -vis * velo[i] -vis * wind[i];
   }

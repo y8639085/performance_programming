@@ -34,12 +34,6 @@ double f2[Ndim + PADDING];
       }
     }
 
-
-
-
-
-
-
     /*
     * add pairwise forces.
     */
@@ -58,19 +52,19 @@ double f2[Ndim + PADDING];
         /*  flip force if close in */
         G_ij = G*mass[i]*mass[j];
         if( delta_r >= Size ){
-          #pragma ivdep
+          #pragma simd
           for(l=0;l<Ndim;l++){
-            force_val = force(G_ij,delta_pos[l],delta_r);
-            f2[l] -= force_val;
-            f[j][l] += force_val;
+            // force_val = force(G_ij,delta_pos[l],delta_r);
+            f2[l] -= force(G_ij,delta_pos[l],delta_r);
+            f[j][l] += force(G_ij,delta_pos[l],delta_r);
           }
         }
         else{
-          #pragma ivdep
+          #pragma simd
           for(l=0;l<Ndim;l++){
-            force_val = force(G_ij,delta_pos[l],delta_r);
-            f2[l] += force_val;
-            f[j][l] -= force_val;
+            // force_val = force(G_ij,delta_pos[l],delta_r);
+            f2[l] += force(G_ij,delta_pos[l],delta_r);;
+            f[j][l] -= force(G_ij,delta_pos[l],delta_r);;
           }
           collisions++;
         }
@@ -81,7 +75,7 @@ double f2[Ndim + PADDING];
     }
 
     /* update positions and velocities */
-    #pragma ivdep
+    #pragma simd
     for(i=0;i<Nbody;i++){
       for(j=0;j<Ndim;j++){
         pos[i][j] += dt * velo[i][j];
